@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Billinginvoices | NexusRecurring{% endblock %}
+{% block page_title %}Billinginvoices{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+  <form class="search-bar" method="get" style="flex:1;margin-bottom:0">
+    <input type="text" name="search" value="{{ search }}" placeholder="Search billinginvoices...">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All Status</option>
+      <option value="paid" {% if status_filter == 'paid' %}selected{% endif %}>Paid</option>
+      <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+      <option value="failed" {% if status_filter == 'failed' %}selected{% endif %}>Failed</option>
+      <option value="refunded" {% if status_filter == 'refunded' %}selected{% endif %}>Refunded</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
+  <a href="/billinginvoices/create/" class="btn btn-primary">+ New BillingInvoice</a>
+</div>
+
+<div class="card">
+  {% if records %}
+  <table>
+    <thead>
+      <tr><th>Invoice Number</th><th>Customer Name</th><th>Amount</th><th>Tax</th><th>Status</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td><a href="/billinginvoices/{{ r.pk }}/edit/"><strong>{{ r.invoice_number }}</strong></a></td>
+        <td>{{ r.customer_name|default:"-" }}</td>
+        <td>{{ r.amount|floatformat:2 }}</td>
+        <td>{{ r.tax|floatformat:2 }}</td>
+        <td><span class="badge badge-blue">{{ r.get_status_display }}</span></td>
+        <td class="actions">
+          <a href="/billinginvoices/{{ r.pk }}/edit/" class="btn btn-primary btn-sm">Edit</a>
+          <form method="post" action="/billinginvoices/{{ r.pk }}/delete/" style="display:inline" onsubmit="return confirm('Delete?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Del</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>No billinginvoices found.</p>
+    <a href="/billinginvoices/create/" class="btn btn-primary" style="margin-top:1rem">Create BillingInvoice</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
