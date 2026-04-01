@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | NexusRecurring{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Total Plans</div>
+    <div class="stat-value">{{ plan_count }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total Subscriptions</div>
+    <div class="stat-value" style="background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;background-clip:text">{{ subscription_count }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total Billinginvoices</div>
+    <div class="stat-value" style="background:linear-gradient(135deg,#f59e0b,#f97316);-webkit-background-clip:text;background-clip:text">{{ billinginvoice_count }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total Price</div>
+    <div class="stat-value" style="background:linear-gradient(135deg,#ef4444,#ec4899);-webkit-background-clip:text;background-clip:text">{{ plan_total_price|floatformat:0 }}</div>
+  </div>
+</div>
+
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <h3>Recent Plans</h3>
+    <a href="/plans/create/" class="btn btn-primary btn-sm">+ New Plan</a>
+  </div>
+  {% if recent %}
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Billing Cycle</th><th>Price</th><th>Subscribers</th><th>Status</th><th>Created</th></tr>
+    </thead>
+    <tbody>
+      {% for r in recent %}
+      <tr>
+        <td><a href="/plans/{{ r.pk }}/edit/">{{ r.name }}</a></td>
+        <td><span class="badge badge-blue">{{ r.get_billing_cycle_display }}</span></td><td>{{ r.price|floatformat:2 }}</td><td>{{ r.subscribers|default:"-" }}</td><td><span class="badge badge-blue">{{ r.get_status_display }}</span></td><td style="color:var(--muted)">{{ r.created_at|date:"M d, Y" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>No records yet.</p>
+    <a href="/plans/create/" class="btn btn-primary" style="margin-top:1rem">Create First Plan</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
