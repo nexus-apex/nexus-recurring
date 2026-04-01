@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Plans | NexusRecurring{% endblock %}
+{% block page_title %}Plans{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+  <form class="search-bar" method="get" style="flex:1;margin-bottom:0">
+    <input type="text" name="search" value="{{ search }}" placeholder="Search plans...">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All Billing Cycle</option>
+      <option value="monthly" {% if status_filter == 'monthly' %}selected{% endif %}>Monthly</option>
+      <option value="quarterly" {% if status_filter == 'quarterly' %}selected{% endif %}>Quarterly</option>
+      <option value="annual" {% if status_filter == 'annual' %}selected{% endif %}>Annual</option>
+      <option value="lifetime" {% if status_filter == 'lifetime' %}selected{% endif %}>Lifetime</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
+  <a href="/plans/create/" class="btn btn-primary">+ New Plan</a>
+</div>
+
+<div class="card">
+  {% if records %}
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Billing Cycle</th><th>Price</th><th>Subscribers</th><th>Status</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td><a href="/plans/{{ r.pk }}/edit/"><strong>{{ r.name }}</strong></a></td>
+        <td><span class="badge badge-blue">{{ r.get_billing_cycle_display }}</span></td>
+        <td>{{ r.price|floatformat:2 }}</td>
+        <td>{{ r.subscribers|default:"-" }}</td>
+        <td><span class="badge badge-blue">{{ r.get_status_display }}</span></td>
+        <td class="actions">
+          <a href="/plans/{{ r.pk }}/edit/" class="btn btn-primary btn-sm">Edit</a>
+          <form method="post" action="/plans/{{ r.pk }}/delete/" style="display:inline" onsubmit="return confirm('Delete?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Del</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>No plans found.</p>
+    <a href="/plans/create/" class="btn btn-primary" style="margin-top:1rem">Create Plan</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
