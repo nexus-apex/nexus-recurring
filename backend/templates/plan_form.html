@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{% if editing %}Edit{% else %}New{% endif %} Plan | NexusRecurring{% endblock %}
+{% block page_title %}{% if editing %}Edit Plan{% else %}New Plan{% endif %}{% endblock %}
+{% block content %}
+<div class="card" style="max-width:750px">
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" name="name" value="{{ record.name|default:'' }}">
+      </div>
+      <div class="form-group">
+        <label>Billing Cycle</label>
+        <select name="billing_cycle">
+          <option value="monthly" {% if record.billing_cycle == 'monthly' %}selected{% endif %}>Monthly</option>
+          <option value="quarterly" {% if record.billing_cycle == 'quarterly' %}selected{% endif %}>Quarterly</option>
+          <option value="annual" {% if record.billing_cycle == 'annual' %}selected{% endif %}>Annual</option>
+          <option value="lifetime" {% if record.billing_cycle == 'lifetime' %}selected{% endif %}>Lifetime</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Price</label>
+        <input type="number" step="0.01" name="price" value="{{ record.price|default:'0' }}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Features</label>
+      <textarea name="features">{{ record.features|default:'' }}</textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Subscribers</label>
+        <input type="number" name="subscribers" value="{{ record.subscribers|default:'0' }}">
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select name="status">
+          <option value="active" {% if record.status == 'active' %}selected{% endif %}>Active</option>
+          <option value="deprecated" {% if record.status == 'deprecated' %}selected{% endif %}>Deprecated</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Trial Days</label>
+        <input type="number" name="trial_days" value="{{ record.trial_days|default:'0' }}">
+      </div>
+    </div>
+
+    <div style="display:flex;gap:0.75rem;margin-top:1rem">
+      <button type="submit" class="btn btn-primary">{% if editing %}Update{% else %}Create{% endif %} Plan</button>
+      <a href="/plans/" class="btn" style="background:var(--border);color:var(--text)">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
